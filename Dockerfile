@@ -46,6 +46,17 @@ RUN apk add --no-cache wget ca-certificates && \
 
 FROM debian:stable-slim
 
+RUN apt-get update --quiet -y && \
+    apt-get install -qy curl \
+                        git \
+                        jq && \
+    apt-get clean -y && \
+    apt-get autoclean -y && \
+    apt-get autoremove -y && \
+    apt-get purge -y && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    rm -rf /var/lib/{apt,dpkg,cache,log}/
+
 COPY --from=kubectl-downloader /usr/local/bin/kubectl /usr/local/bin/kubectl
 COPY --from=helm-downloader /usr/local/bin/helm /usr/local/bin/helm
 COPY --from=helmsman-downloader /usr/local/bin/helmsman /usr/local/bin/helmsman
