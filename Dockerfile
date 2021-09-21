@@ -3,6 +3,16 @@ ARG KUBECTL_RELEASE=v1.22.0
 ARG HELM_RELEASE=v3.4.2
 ARG HELMSMAN_VERSION=3.4.1
 ARG KUBEVAL_VERSION=v0.16.1
+ARG KIND_VERSION=v0.11.1
+
+FROM alpine:latest AS kind-downloader
+
+ARG KIND_VESION
+
+RUN apk add --no-cache wget curl ca-certificates && \
+    curl -fsq -Lo ./kind https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64 && \
+    chmod +x ./kind && \
+    mv ./kind /usr/local/bin/kind
 
 FROM alpine:latest AS kubectl-downloader
 
@@ -60,6 +70,7 @@ RUN apt-get update --quiet -y && \
 COPY --from=kubectl-downloader /usr/local/bin/kubectl /usr/local/bin/kubectl
 COPY --from=helm-downloader /usr/local/bin/helm /usr/local/bin/helm
 COPY --from=helmsman-downloader /usr/local/bin/helmsman /usr/local/bin/helmsman
+COPY --from=kind-downloader /usr/local/bin/kind /usr/local/bin/kind
 
 RUN helm plugin install https://github.com/databus23/helm-diff --version master
 
