@@ -7,11 +7,11 @@ ARG KIND_VERSION=v0.11.1
 
 FROM alpine:latest AS kind-downloader
 
-ARG KIND_VESION
+ARG KIND_VERSION
 
 RUN apk add --no-cache wget curl ca-certificates && \
-    curl -fsq -Lo ./kind https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64 && \
-    chmod +x ./kind && \
+    curl -Lo ./kind https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64 && \
+    chmod +x kind && \
     mv ./kind /usr/local/bin/kind
 
 FROM alpine:latest AS kubectl-downloader
